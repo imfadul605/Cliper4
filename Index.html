@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ClipForge AI</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:#eee7ff;
+  color:#17151d;
+}
+
+.header{
+  background:#fffaf5;
+  padding:16px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid #ddd;
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.logo-icon{
+  width:58px;
+  height:58px;
+  border-radius:18px;
+  background:#7028d8;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
+}
+
+.logo-text{
+  font-size:25px;
+  font-weight:800;
+  line-height:1;
+}
+
+.start-btn{
+  background:#7028d8;
+  color:white;
+  border:0;
+  border-radius:40px;
+  padding:15px 24px;
+  font-size:18px;
+  font-weight:800;
+}
+
+.container{
+  width:min(760px,94%);
+  margin:22px auto 70px;
+}
+
+.card{
+  background:white;
+  border-radius:28px;
+  padding:24px;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+h1{
+  font-size:29px;
+  margin-bottom:7px;
+}
+
+.subtitle{
+  color:#777;
+  margin-bottom:22px;
+}
+
+.title{
+  display:block;
+  font-size:19px;
+  font-weight:800;
+  margin:21px 0 10px;
+}
+
+select,
+textarea{
+  width:100%;
+  border:2px solid #ddd;
+  border-radius:18px;
+  padding:16px;
+  font-size:18px;
+  background:#fff;
+  outline:none;
+}
+
+select:focus,
+textarea:focus{
+  border-color:#7028d8;
+}
+
+textarea{
+  min-height:180px;
+  resize:vertical;
+}
+
+/* =========================
+   PLUS ATTACHMENT
+========================= */
+
+.attach-area{
+  position:relative;
+  margin-top:10px;
+}
+
+.plus-btn{
+  width:58px;
+  height:58px;
+  border:0;
+  border-radius:50%;
+  background:#f1ecf8;
+  color:#7028d8;
+  font-size:34px;
+  font-weight:400;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:.2s;
+}
+
+.plus-btn.active{
+  background:#7028d8;
+  color:#fff;
+  transform:rotate(45deg);
+}
+
+.attach-menu{
+  display:none;
+  position:absolute;
+  left:0;
+  top:68px;
+  width:245px;
+  background:#fff;
+  border:1px solid #ddd;
+  border-radius:20px;
+  padding:8px;
+  box-shadow:0 12px 35px rgba(0,0,0,.16);
+  z-index:15;
+}
+
+.attach-menu.show{
+  display:block;
+}
+
+.attach-item{
+  width:100%;
+  border:0;
+  background:#fff;
+  padding:14px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  gap:13px;
+  text-align:left;
+  cursor:pointer;
+  font-size:17px;
+  font-weight:700;
+}
+
+.attach-item:hover{
+  background:#f5f0fb;
+}
+
+.attach-icon{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  background:#f0e8ff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+}
+
+/* Hidden file inputs */
+.hidden-input{
+  display:none;
+}
+
+/* =========================
+   SELECTED MEDIA
+========================= */
+
+.selected-media{
+  display:none;
+  margin-top:15px;
+  padding:14px;
+  border:1px solid #ddd;
+  border-radius:18px;
+  background:#fafafa;
+}
+
+.media-preview img,
+.media-preview video{
+  width:100%;
+  max-height:300px;
+  object-fit:contain;
+  border-radius:14px;
+  background:#111;
+}
+
+.file-preview{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px;
+  background:#f3eef8;
+  border-radius:14px;
+}
+
+.file-icon{
+  font-size:38px;
+}
+
+.file-name{
+  font-weight:700;
+  word-break:break-word;
+}
+
+.file-size{
+  color:#777;
+  font-size:14px;
+  margin-top:4px;
+}
+
+.remove-file{
+  margin-top:12px;
+  border:0;
+  background:#eee;
+  border-radius:10px;
+  padding:9px 14px;
+  cursor:pointer;
+}
+
+/* =========================
+   OPTIONS
+========================= */
+
+.options{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:16px;
+}
+
+.option{
+  background:#f7f4f9;
+  padding:13px 16px;
+  border-radius:30px;
+  font-size:16px;
+  font-weight:700;
+}
+
+.option input{
+  width:19px;
+  height:19px;
+  vertical-align:middle;
+  margin-right:6px;
+  accent-color:#7028d8;
+}
+
+/* =========================
+   GENERATE
+========================= */
+
+.generate{
+  width:100%;
+  margin-top:25px;
+  border:0;
+  border-radius:20px;
+  background:#7028d8;
+  color:white;
+  padding:19px;
+  font-size:20px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.generate:disabled{
+  opacity:.6;
+}
+
+.status{
+  display:none;
+  margin-top:15px;
+  padding:13px;
+  border-radius:13px;
+  background:#f3eef8;
+  font-size:15px;
+}
+
+/* =========================
+   RESULT
+========================= */
+
+.result{
+  display:none;
+  margin-top:22px;
+  padding:20px;
+  border-radius:20px;
+  background:#17121f;
+  color:#fff;
+}
+
+.result h2{
+  margin-bottom:14px;
+}
+
+#resultText{
+  white-space:pre-wrap;
+  line-height:1.6;
+  color:#eee;
+}
+
+.result-buttons{
+  display:flex;
+  gap:10px;
+  margin-top:18px;
+}
+
+.result-buttons button{
+  border:0;
+  border-radius:11px;
+  padding:11px 17px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+@media(max-width:600px){
+
+  .header{
+    padding:12px;
+  }
+
+  .logo-icon{
+    width:52px;
+    height:52px;
+    font-size:30px;
+  }
+
+  .logo-text{
+    font-size:22px;
+  }
+
+  .start-btn{
+    padding:13px 17px;
+    font-size:16px;
+  }
+
+  .card{
+    padding:19px;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+  <div class="logo">
+    <div class="logo-icon">✦</div>
+
+    <div class="logo-text">
+      ClipForge<br>AI
+    </div>
+  </div>
+
+  <button class="start-btn"
+    onclick="document.getElementById('editor').scrollIntoView({behavior:'smooth'})">
+    Start<br>clipping
+  </button>
+
+</header>
+
+
+<main class="container">
+
+<section class="card" id="editor">
+
+<h1>AI Video Editor</h1>
+
+<p class="subtitle">
+Upload your media and tell AI what you want to create.
+</p>
+
+
+<!-- =========================
+     + ATTACHMENT
+========================= -->
+
+<label class="title">Add media</label>
+
+<div class="attach-area">
+
+  <button
+    class="plus-btn"
+    id="plusBtn"
+    onclick="toggleAttachMenu()">
+    +
+  </button>
+
+
+  <div class="attach-menu" id="attachMenu">
+
+    <button
+      class="attach-item"
+      onclick="openVideoPicker()">
+
+      <span class="attach-icon">🎥</span>
+
+      <span>
+        Video
+        <small style="display:block;color:#777;font-weight:400">
+          Choose from Gallery
+        </small>
+      </span>
+
+    </button>
+
+
+    <button
+      class="attach-item"
+      onclick="openImagePicker()">
+
+      <span class="attach-icon">🖼️</span>
+
+      <span>
+        Image
+        <small style="display:block;color:#777;font-weight:400">
+          Choose from Gallery
+        </small>
+      </span>
+
+    </button>
+
+
+    <button
+      class="attach-item"
+      onclick="openFilePicker()">
+
+      <span class="attach-icon">📁</span>
+
+      <span>
+        File
+        <small style="display:block;color:#777;font-weight:400">
+          Choose from Files
+        </small>
+      </span>
+
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- Hidden Android file pickers -->
+
+<input
+  id="videoInput"
+  class="hidden-input"
+  type="file"
+  accept="video/*">
+
+<input
+  id="imageInput"
+  class="hidden-input"
+  type="file"
+  accept="image/*">
+
+<input
+  id="fileInput"
+  class="hidden-input"
+  type="file"
+  accept=".txt,.pdf,.doc,.docx">
+
+
+<!-- =========================
+     SELECTED FILE
+========================= -->
+
+<div
+  class="selected-media"
+  id="selectedMedia">
+
+  <div
+    class="media-preview"
+    id="mediaPreview">
+  </div>
+
+  <div
+    id="mediaInfo"
+    style="margin-top:10px">
+  </div>
+
+  <button
+    class="remove-file"
+    onclick="removeSelectedFile()">
+    Remove
+  </button>
+
+</div>
+
+
+<!-- =========================
+     PLATFORM
+========================= -->
+
+<label class="title">Platform</label>
+
+<select id="platform">
+
+  <option>YouTube Shorts</option>
+  <option>Instagram Reels</option>
+  <option>TikTok</option>
+  <option>Facebook Reels</option>
+
+</select>
+
+
+<!-- =========================
+     STYLE
+========================= -->
+
+<label class="title">Editing style</label>
+
+<select id="style">
+
+  <option>Viral fast-paced</option>
+  <option>Cinematic</option>
+  <option>Professional</option>
+  <option>Podcast clips</option>
+  <option>Educational</option>
+  <option>Storytelling</option>
+
+</select>
+
+
+<!-- =========================
+     DURATION
+========================= -->
+
+<label class="title">Target duration</label>
+
+<select id="duration">
+
+  <option>15 seconds</option>
+  <option selected>30 seconds</option>
+  <option>45 seconds</option>
+  <option>60 seconds</option>
+  <option>90 seconds</option>
+
+</select>
+
+
+<!-- =========================
+     LANGUAGE
+========================= -->
+
+<label class="title">Language</label>
+
+<select id="language">
+
+  <option>English</option>
+  <option>Bangla</option>
+  <option>Hindi</option>
+  <option>Urdu</option>
+
+</select>
+
+
+<!-- =========================
+     VIDEO INFORMATION
+========================= -->
+
+<label class="title">
+  Video Information / Transcript
+</label>
+
+<textarea
+  id="videoInfo"
+  placeholder="Write or paste your video information here...
+
+Example:
+
+This is a 5-minute YouTube interview about growing a channel.
+
+You can add:
+• Transcript
+• Video topic
+• Important moments
+• Speaker information
+• Desired hook
+• CTA
+• Editing instructions
+• Anything AI should know about the video"></textarea>
+
+
+<!-- =========================
+     EDITING OPTIONS
+========================= -->
+
+<div class="options">
+
+  <label class="option">
+    <input
+      type="checkbox"
+      id="captions"
+      checked>
+    Dynamic captions
+  </label>
+
+
+  <label class="option">
+    <input
+      type="checkbox"
+      id="zoom"
+      checked>
+    Smart zoom
+  </label>
+
+
+  <label class="option">
+    <input
+      type="checkbox"
+      id="broll"
+      checked>
+    B-roll
+  </label>
+
+
+  <label class="option">
+    <input
+      type="checkbox"
+      id="music"
+      checked>
+    Music/SFX
+  </label>
+
+</div>
+
+
+<!-- =========================
+     GENERATE
+========================= -->
+
+<button
+  class="generate"
+  id="generateBtn"
+  onclick="generateInstructions()">
+
+  ✨ Generate AI Editing Instructions
+
+</button>
+
+
+<div
+  class="status"
+  id="status">
+</div>
+
+
+<!-- =========================
+     RESULT
+========================= -->
+
+<div
+  class="result"
+  id="result">
+
+  <h2>AI Editing Instructions</h2>
+
+  <div id="resultText"></div>
+
+
+  <div class="result-buttons">
+
+    <button onclick="copyResult()">
+      Copy
+    </button>
+
+    <button onclick="downloadResult()">
+      Download
+    </button>
+
+  </div>
+
+</div>
+
+</section>
+
+</main>
+
+
+<script>
+
+let selectedFile = null;
+
+
+/* =================================
+   PLUS MENU
+================================= */
+
+function toggleAttachMenu(){
+
+  const menu =
+    document.getElementById("attachMenu");
+
+  const btn =
+    document.getElementById("plusBtn");
+
+  menu.classList.toggle("show");
+
+  btn.classList.toggle("active");
+
+}
+
+
+/* =================================
+   OPEN VIDEO
+================================= */
+
+function openVideoPicker(){
+
+  closeAttachMenu();
+
+  document
+    .getElementById("videoInput")
+    .click();
+
+}
+
+
+/* =================================
+   OPEN IMAGE
+================================= */
+
+function openImagePicker(){
+
+  closeAttachMenu();
+
+  document
+    .getElementById("imageInput")
+    .click();
+
+}
+
+
+/* =================================
+   OPEN FILE
+================================= */
+
+function openFilePicker(){
+
+  closeAttachMenu();
+
+  document
+    .getElementById("fileInput")
+    .click();
+
+}
+
+
+function closeAttachMenu(){
+
+  document
+    .getElementById("attachMenu")
+    .classList.remove("show");
+
+  document
+    .getElementById("plusBtn")
+    .classList.remove("active");
+
+}
+
+
+/* =================================
+   VIDEO SELECTED
+================================= */
+
+document
+  .getElementById("videoInput")
+  .addEventListener("change",function(){
+
+    if(this.files[0]){
+
+      selectedFile=this.files[0];
+
+      displaySelectedFile(
+        selectedFile,
+        "video"
+      );
+
+    }
+
+  });
+
+
+/* =================================
+   IMAGE SELECTED
+================================= */
+
+document
+  .getElementById("imageInput")
+  .addEventListener("change",function(){
+
+    if(this.files[0]){
+
+      selectedFile=this.files[0];
+
+      displaySelectedFile(
+        selectedFile,
+        "image"
+      );
+
+    }
+
+  });
+
+
+/* =================================
+   FILE SELECTED
+================================= */
+
+document
+  .getElementById("fileInput")
+  .addEventListener("change",function(){
+
+    if(this.files[0]){
+
+      selectedFile=this.files[0];
+
+      displaySelectedFile(
+        selectedFile,
+        "file"
+      );
+
+    }
+
+  });
+
+
+/* =================================
+   DISPLAY FILE
+================================= */
+
+function displaySelectedFile(file,type){
+
+  const box =
+    document.getElementById("selectedMedia");
+
+  const preview =
+    document.getElementById("mediaPreview");
+
+  const info =
+    document.getElementById("mediaInfo");
+
+  box.style.display="block";
+
+  preview.innerHTML="";
+
+
+  if(type==="video"){
+
+    const video =
+      document.createElement("video");
+
+    video.controls=true;
+
+    video.playsInline=true;
+
+    video.src =
+      URL.createObjectURL(file);
+
+    preview.appendChild(video);
+
+  }
+
+
+  else if(type==="image"){
+
+    const image =
+      document.createElement("img");
+
+    image.src =
+      URL.createObjectURL(file);
+
+    preview.appendChild(image);
+
+  }
+
+
+  else{
+
+    preview.innerHTML=`
+
+      <div class="file-preview">
+
+        <div class="file-icon">📄</div>
+
+        <div>
+
+          <div class="file-name">
+            ${escapeHTML(file.name)}
+          </div>
+
+          <div class="file-size">
+            ${formatBytes(file.size)}
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  info.innerHTML=`
+
+    <strong>${escapeHTML(file.name)}</strong><br>
+
+    <span style="color:#777">
+      ${escapeHTML(file.type || "File")}
+      •
+      ${formatBytes(file.size)}
+    </span>
+
+  `;
+
+}
+
+
+/* =================================
+   REMOVE
+================================= */
+
+function removeSelectedFile(){
+
+  selectedFile=null;
+
+  document
+    .getElementById("selectedMedia")
+    .style.display="none";
+
+  document
+    .getElementById("videoInput")
+    .value="";
+
+  document
+    .getElementById("imageInput")
+    .value="";
+
+  document
+    .getElementById("fileInput")
+    .value="";
+
+}
+
+
+/* =================================
+   GENERATE
+================================= */
+
+async function generateInstructions(){
+
+  const videoInfo =
+    document
+      .getElementById("videoInfo")
+      .value
+      .trim();
+
+
+  if(!selectedFile && !videoInfo){
+
+    showStatus(
+      "Please upload a video, image or file, or enter Video Information.",
+      true
+    );
+
+    return;
+
+  }
+
+
+  const button =
+    document.getElementById("generateBtn");
+
+  button.disabled=true;
+
+  button.textContent=
+    "⏳ Generating...";
+
+
+  showStatus(
+    "AI is creating your editing instructions..."
+  );
+
+
+  const payload={
+
+    platform:
+      document.getElementById("platform").value,
+
+    style:
+      document.getElementById("style").value,
+
+    duration:
+      document.getElementById("duration").value,
+
+    language:
+      document.getElementById("language").value,
+
+    videoInfo:videoInfo,
+
+    features:{
+
+      dynamicCaptions:
+        document.getElementById("captions").checked,
+
+      smartZoom:
+        document.getElementById("zoom").checked,
+
+      broll:
+        document.getElementById("broll").checked,
+
+      musicSFX:
+        document.getElementById("music").checked
+
+    },
+
+    file:selectedFile ? {
+
+      name:selectedFile.name,
+
+      type:selectedFile.type,
+
+      size:selectedFile.size
+
+    } : null
+
+  };
+
+
+  try{
+
+    const response =
+      await fetch(
+        "/api/generate",
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify(payload)
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if(!response.ok || !data.success){
+
+      throw new Error(
+        data.error ||
+        "Generation failed"
+      );
+
+    }
+
+
+    document
+      .getElementById("result")
+      .style.display="block";
+
+
+    document
+      .getElementById("resultText")
+      .textContent=data.result;
+
+
+    document
+      .getElementById("result")
+      .scrollIntoView({
+        behavior:"smooth"
+      });
+
+
+    showStatus(
+      "✓ AI editing instructions generated."
+    );
+
+  }
+
+
+  catch(error){
+
+    showStatus(
+      "Error: "+error.message,
+      true
+    );
+
+  }
+
+
+  finally{
+
+    button.disabled=false;
+
+    button.textContent=
+      "✨ Generate AI Editing Instructions";
+
+  }
+
+}
+
+
+/* =================================
+   STATUS
+================================= */
+
+function showStatus(message,error=false){
+
+  const status =
+    document.getElementById("status");
+
+  status.style.display="block";
+
+  status.textContent=message;
+
+}
+
+
+/* =================================
+   COPY
+================================= */
+
+async function copyResult(){
+
+  const text =
+    document
+      .getElementById("resultText")
+      .textContent;
+
+  await navigator.clipboard.writeText(text);
+
+  showStatus(
+    "✓ Copied to clipboard."
+  );
+
+}
+
+
+/* =================================
+   DOWNLOAD
+================================= */
+
+function downloadResult(){
+
+  const text =
+    document
+      .getElementById("resultText")
+      .textContent;
+
+  const blob =
+    new Blob(
+      [text],
+      {type:"text/plain"}
+    );
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const a =
+    document.createElement("a");
+
+  a.href=url;
+
+  a.download=
+    "clipforge-editing-instructions.txt";
+
+  a.click();
+
+  URL.revokeObjectURL(url);
+
+}
+
+
+/* =================================
+   HELPERS
+================================= */
+
+function formatBytes(bytes){
+
+  if(bytes===0)
+    return "0 Bytes";
+
+  const units=[
+    "Bytes",
+    "KB",
+    "MB",
+    "GB"
+  ];
+
+  const i=
+    Math.floor(
+      Math.log(bytes) /
+      Math.log(1024)
+    );
+
+  return (
+    parseFloat(
+      (
+        bytes /
+        Math.pow(1024,i)
+      ).toFixed(2)
+    )
+    +" "
+    +units[i]
+  );
+
+}
+
+
+function escapeHTML(text){
+
+  return String(text)
+
+    .replace(/&/g,"&amp;")
+
+    .replace(/</g,"&lt;")
+
+    .replace(/>/g,"&gt;")
+
+    .replace(/"/g,"&quot;")
+
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* Close menu when tapping outside */
+
+document.addEventListener(
+  "click",
+  function(event){
+
+    const area =
+      document.querySelector(
+        ".attach-area"
+      );
+
+    if(
+      area &&
+      !area.contains(event.target)
+    ){
+
+      closeAttachMenu();
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>
